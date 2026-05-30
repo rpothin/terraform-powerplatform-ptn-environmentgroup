@@ -1,5 +1,5 @@
 # ============================================================================
-# ENVIRONMENT GROUP - Test
+# ENVIRONMENT GROUP
 # ============================================================================
 
 resource "powerplatform_environment_group" "this" {

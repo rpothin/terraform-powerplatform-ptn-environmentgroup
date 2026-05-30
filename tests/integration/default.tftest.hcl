@@ -13,24 +13,25 @@
 #   pipelines_host_url  — Dataverse API URL of the Pipelines Host environment
 
 variables {
-  name     = "tftest-ptn-envgroup"
+  # Use per-run timestamps so Dataverse domain names do not collide with prior CI runs.
+  name     = format("tftest-ptn-envgroup-%s", formatdate("YYYYMMDDhhmmss", timestamp()))
   location = "unitedstates"
 
   environments = {
     "dev" = {
-      display_name     = "tftest-ptn-envgroup - Dev"
+      display_name     = format("tftest-ptn-envgroup-dev-%s", formatdate("YYYYMMDDhhmmss", timestamp()))
       environment_type = "Sandbox"
       dataverse        = {}
     }
     "prod" = {
-      display_name     = "tftest-ptn-envgroup - Prod"
+      display_name     = format("tftest-ptn-envgroup-prod-%s", formatdate("YYYYMMDDhhmmss", timestamp()))
       environment_type = "Sandbox"
       dataverse        = {}
     }
   }
 
   dlp_policy = {
-    display_name            = "tftest-ptn-envgroup - DLP"
+    display_name            = format("tftest-ptn-envgroup-dlp-%s", formatdate("YYYYMMDDhhmmss", timestamp()))
     default_connector_group = "NonBusiness"
   }
 }
@@ -48,8 +49,8 @@ run "creates_environment_group_with_two_environments" {
   }
 
   assert {
-    condition     = output.group_display_name == "tftest-ptn-envgroup"
-    error_message = "group_display_name should echo var.name."
+    condition     = startswith(output.group_display_name, "tftest-ptn-envgroup-")
+    error_message = "group_display_name should include the integration test prefix."
   }
 
   assert {
@@ -82,4 +83,3 @@ run "creates_environment_group_with_two_environments" {
 # This is a known limitation of the current Power Platform provider and cannot be worked
 # around from within a parent module. Pipeline configuration is thoroughly covered by the
 # 22 unit tests in tests/unit/default.tftest.hcl using mock providers.
-

@@ -1,9 +1,40 @@
-# Registry source: derived from the repo name — strip the "terraform-powerplatform-" prefix.
-# e.g. terraform-powerplatform-res-environment → rpothin/res-environment/powerplatform
-# Set this during module initialization. No version pin — always resolves to latest.
 module "this" {
-  source = "../../" # Replace with registry source before first release (see AGENTS.md)
+  source = "rpothin/ptn-environmentgroup/powerplatform"
 
   name     = var.name
   location = var.location
+
+  environments = {
+    "dev" = {
+      display_name     = "${var.name} - Dev"
+      environment_type = "Sandbox"
+      dataverse        = {}
+    }
+    "uat" = {
+      display_name     = "${var.name} - UAT"
+      environment_type = "Sandbox"
+      dataverse        = {}
+    }
+  }
+
+  dlp_policy = {
+    display_name            = "${var.name} - DLP Policy"
+    default_connector_group = "NonBusiness"
+  }
+
+  pipelines = {
+    "main" = {
+      dev_environment_key = "dev"
+      stages = [
+        {
+          environment_key                = "uat"
+          require_predeployment_approval = true
+        }
+      ]
+    }
+  }
+
+  host_environment_id = var.host_environment_id
+  pipelines_host_url  = var.pipelines_host_url
 }
+

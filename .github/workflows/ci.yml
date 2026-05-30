@@ -110,7 +110,7 @@ jobs:
   integration:
     name: Integration Tests
     runs-on: ubuntu-latest
-    if: vars.ENABLE_INTEGRATION_TESTS == 'true'
+    if: vars.ENABLE_INTEGRATION_TESTS == 'true' && vars.POWER_PLATFORM_HOST_ENVIRONMENT_ID != '' && vars.POWER_PLATFORM_PIPELINES_HOST_URL != ''
     permissions:
       contents: read
       id-token: write
@@ -129,3 +129,5 @@ jobs:
           POWER_PLATFORM_USE_OIDC: "true"
           POWER_PLATFORM_TENANT_ID: ${{ secrets.POWER_PLATFORM_TENANT_ID }}
           POWER_PLATFORM_CLIENT_ID: ${{ secrets.POWER_PLATFORM_CLIENT_ID }}
+          TF_VAR_host_environment_id: ${{ vars.POWER_PLATFORM_HOST_ENVIRONMENT_ID }}
+          TF_VAR_pipelines_host_url: ${{ vars.POWER_PLATFORM_PIPELINES_HOST_URL }}

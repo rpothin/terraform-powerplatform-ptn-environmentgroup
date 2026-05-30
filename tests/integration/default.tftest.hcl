@@ -71,10 +71,6 @@ run "creates_environment_group_with_two_environments" {
 run "creates_pipeline_after_environments_exist" {
   command = apply
 
-  plan_options {
-    target = [module.pipelines["main"]]
-  }
-
   variables {
     pipelines = {
       "main" = {

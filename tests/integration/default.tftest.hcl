@@ -19,12 +19,12 @@ variables {
 
   environments = {
     "dev" = {
-      display_name     = format("tftest-ptn-envgroup-dev-%s", formatdate("YYYYMMDDhhmmss", timestamp()))
+      display_name     = format("tfdev%s", substr(md5(timestamp()), 0, 6))
       environment_type = "Sandbox"
       dataverse        = {}
     }
     "prod" = {
-      display_name     = format("tftest-ptn-envgroup-prod-%s", formatdate("YYYYMMDDhhmmss", timestamp()))
+      display_name     = format("tfprd%s", substr(md5(timestamp()), 0, 6))
       environment_type = "Sandbox"
       dataverse        = {}
     }

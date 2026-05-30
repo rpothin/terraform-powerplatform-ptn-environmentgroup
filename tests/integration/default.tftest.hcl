@@ -12,37 +12,34 @@
 #   host_environment_id — UUID of the Pipelines Host environment
 #   pipelines_host_url  — Dataverse API URL of the Pipelines Host environment
 
+variables {
+  name     = "tftest-ptn-envgroup"
+  location = "unitedstates"
+
+  environments = {
+    "dev" = {
+      display_name     = "tftest-ptn-envgroup - Dev"
+      environment_type = "Sandbox"
+      dataverse        = {}
+    }
+    "prod" = {
+      display_name     = "tftest-ptn-envgroup - Prod"
+      environment_type = "Sandbox"
+      dataverse        = {}
+    }
+  }
+
+  dlp_policy = {
+    display_name            = "tftest-ptn-envgroup - DLP"
+    default_connector_group = "NonBusiness"
+  }
+}
+
 run "creates_environment_group_with_two_environments" {
   command = apply
 
   variables {
-    name     = "tftest-ptn-envgroup"
-    location = "unitedstates"
-
-    environments = {
-      "dev" = {
-        display_name     = "tftest-ptn-envgroup - Dev"
-        environment_type = "Sandbox"
-        dataverse        = {}
-      }
-      "prod" = {
-        display_name     = "tftest-ptn-envgroup - Prod"
-        environment_type = "Sandbox"
-        dataverse        = {}
-      }
-    }
-
-    dlp_policy = {
-      display_name            = "tftest-ptn-envgroup - DLP"
-      default_connector_group = "NonBusiness"
-    }
-
-    pipelines = {
-      "main" = {
-        dev_environment_key = "dev"
-        stages              = [{ environment_key = "prod" }]
-      }
-    }
+    pipelines = {}
   }
 
   assert {
@@ -66,8 +63,26 @@ run "creates_environment_group_with_two_environments" {
   }
 
   assert {
+    condition     = output.pipelines == {}
+    error_message = "Pipelines should be empty until the environments already exist in state."
+  }
+}
+
+run "creates_pipeline_after_environments_exist" {
+  command = apply
+
+  variables {
+    pipelines = {
+      "main" = {
+        dev_environment_key = "dev"
+        stages              = [{ environment_key = "prod" }]
+      }
+    }
+  }
+
+  assert {
     condition     = length(output.pipelines) == 1
-    error_message = "One pipeline should have been created."
+    error_message = "One pipeline should have been created after the environments already exist."
   }
 }
 

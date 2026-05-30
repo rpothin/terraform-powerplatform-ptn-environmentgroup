@@ -26,7 +26,7 @@ run "creates_environment_group_with_two_environments" {
       }
       "prod" = {
         display_name     = "tftest-ptn-envgroup - Prod"
-        environment_type = "Production"
+        environment_type = "Sandbox"
       }
     }
 

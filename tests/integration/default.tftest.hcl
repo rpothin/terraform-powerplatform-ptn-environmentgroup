@@ -23,10 +23,12 @@ run "creates_environment_group_with_two_environments" {
       "dev" = {
         display_name     = "tftest-ptn-envgroup - Dev"
         environment_type = "Sandbox"
+        dataverse        = {}
       }
       "prod" = {
         display_name     = "tftest-ptn-envgroup - Prod"
         environment_type = "Sandbox"
+        dataverse        = {}
       }
     }
 

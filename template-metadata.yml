@@ -1,0 +1,59 @@
+template: rpothin/terraform-powerplatform-module-template
+common_files:
+  - .agents/skills/
+  - .devcontainer/
+  - .github/
+  - docs/
+  - .editorconfig
+  - .gitattributes
+  - .gitignore
+  - .terraform-docs.yml
+  - .trivy.yaml
+  - AGENTS.md
+  - CODE_OF_CONDUCT.md
+  - CONTRIBUTING.md
+  - LICENSE
+  - MAINTAINERS.md
+  - Makefile
+  - SECURITY.md
+  - SUPPORT.md
+  - template-metadata.yml
+settings:
+    has_wiki: false
+    has_issues: true
+    has_projects: false
+    has_discussions: true
+    has_pull_requests: true
+    pull_request_creation_policy: collaborators_only
+    allow_squash_merge: false
+    allow_merge_commit: true
+    allow_rebase_merge: false
+    allow_auto_merge: false
+    delete_branch_on_merge: true
+    allow_update_branch: true
+    visibility: public
+    description: AVM-aligned Terraform Resource / Pattern / Utility Module for ...
+topics:
+    - avm-aligned
+    - module
+    - power-platform
+    - terraform
+    - resource
+    - pattern
+    - utility
+variables:
+    - name: ENABLE_INTEGRATION_TESTS
+      value: "false"
+secrets:
+    - name: POWER_PLATFORM_CLIENT_ID
+    - name: POWER_PLATFORM_TENANT_ID
+actions:
+    can_approve_pull_request_reviews: false
+    sha_pinning_required: false
+    default_workflow_permissions: read
+security:
+    dependabot_alerts: true
+    dependabot_security_updates: true
+    secret_scanning: true
+    secret_scanning_push_protection: true
+    private_vulnerability_reporting: false

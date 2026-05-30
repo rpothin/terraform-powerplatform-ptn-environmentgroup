@@ -1,0 +1,38 @@
+name: Validate Examples
+
+on:
+  pull_request:
+    branches: [main]
+  merge_group:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  example-sources:
+    name: Example Registry Sources
+    runs-on: ubuntu-latest
+    # Skip on the template repo itself — its examples intentionally keep ../../ for local testing.
+    # Derived module repos must replace the local source with the registry source before publishing.
+    if: github.repository != 'rpothin/terraform-powerplatform-module-template'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Check example sources point to registry
+        run: |
+          if grep -r 'source = "../../"' examples/; then
+            echo ""
+            echo "ERROR: One or more examples still use a local source path ('../../')."
+            echo "Replace with the Terraform Registry source derived from the repo name:"
+            echo "  strip 'terraform-powerplatform-' from the repo name → {module-name}"
+            echo "  source = \"rpothin/{module-name}/powerplatform\""
+            echo "See AGENTS.md for the full convention."
+            exit 1
+          fi
+          echo "All examples use registry sources."

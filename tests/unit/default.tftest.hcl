@@ -471,8 +471,8 @@ run "workspace_description_echoes_variable" {
 # var.environments environment_type validations
 # ---------------------------------------------------------------------------
 
-run "rejects_production_environment_type" {
-  command = plan
+run "accepts_production_environment_type" {
+  command = apply
 
   variables {
     environments = {
@@ -485,7 +485,10 @@ run "rejects_production_environment_type" {
     }
   }
 
-  expect_failures = [var.environments]
+  assert {
+    condition     = var.environments["prod"].environment_type == "Production"
+    error_message = "Production environment_type should be accepted."
+  }
 }
 
 # ---------------------------------------------------------------------------
@@ -493,9 +496,9 @@ run "rejects_production_environment_type" {
 # ---------------------------------------------------------------------------
 
 run "plan_succeeds_with_pipeline" {
-  # override_module bypasses the local-exec "sleep" provisioner inside res-deploymentpipeline
-  # (platform-specific Unix command). This specifically validates that a non-empty pipelines
-  # map produces correct output structure after the day-1 for_each fix in v0.1.1.
+  # override_module isolates the pipeline child module for unit testing: bypasses the
+  # local-exec sleep provisioner (Unix-only) and avoids needing a real Pipelines Host.
+  # This validates that a non-empty pipelines map produces correct output structure.
   command = apply
 
   variables {

@@ -11,6 +11,11 @@
 # Required variables (set via .tfvars or TF_VAR_ environment variables):
 #   host_environment_id — UUID of the Pipelines Host environment
 #   pipelines_host_url  — Dataverse API URL of the Pipelines Host environment
+#
+# Tenant requirements:
+#   - Managed Environments premium licensing (required for environment group membership
+#     with managed_environment_enabled = true; see res-environment Troubleshooting).
+#   - Power Platform Pipelines solution installed in the Pipelines Host environment.
 
 variables {
   # Use per-run timestamps so Dataverse domain names do not collide with prior CI runs.
@@ -36,11 +41,16 @@ variables {
   }
 }
 
-run "creates_environment_group_with_two_environments" {
+run "creates_environment_group_with_environments_dlp_and_pipeline" {
   command = apply
 
   variables {
-    pipelines = {}
+    pipelines = {
+      "main" = {
+        dev_environment_key = "dev"
+        stages              = [{ environment_key = "prod" }]
+      }
+    }
   }
 
   assert {
@@ -64,14 +74,17 @@ run "creates_environment_group_with_two_environments" {
   }
 
   assert {
-    condition     = output.pipelines == {}
-    error_message = "Pipelines should be empty until the environments already exist in state."
+    condition     = length(output.pipelines) == 1
+    error_message = "One pipeline should have been created."
+  }
+
+  assert {
+    condition     = output.pipelines["main"].pipeline_id != ""
+    error_message = "pipelines[main].pipeline_id should be a non-empty GUID after apply."
+  }
+
+  assert {
+    condition     = length(output.pipelines["main"].ordered_stages) == 1
+    error_message = "pipelines[main] should have one ordered stage."
   }
 }
-
-# Pipeline integration testing is intentionally skipped.
-#
-# The current provider stack still returns invalid post-apply objects for both
-# grouped-environment managed settings and the deployment pipeline dev-link REST
-# resource in CI. Pipeline configuration remains covered by the mocked unit tests
-# in tests/unit/default.tftest.hcl until the upstream provider behavior stabilizes.

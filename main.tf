@@ -13,7 +13,7 @@ resource "powerplatform_environment_group" "this" {
 
 module "environments" {
   source   = "rpothin/res-environment/powerplatform"
-  version  = "= 0.1.1"
+  version  = "= 0.1.3"
   for_each = var.environments
 
   environment = {
@@ -23,15 +23,17 @@ module "environments" {
     environment_group_id = lower(powerplatform_environment_group.this.id)
   }
 
-  # Environment groups already impose the group-level governance posture for member
-  # environments. Creating the standalone powerplatform_managed_environment resource
-  # currently triggers provider apply/destroy errors for this pattern, so keep it disabled.
-  managed_environment_enabled = false
+  # res-environment v0.1.2+ requires managed_environment_enabled = true whenever
+  # environment_group_id is set (platform rule). Provider bug #931 (which caused
+  # "invalid result object after apply") is fixed in provider v4.0.0; our ~> 4.0
+  # constraint already enforces the minimum. Tenant Managed Environments premium
+  # licensing is required — see res-environment Troubleshooting for details.
+  managed_environment_enabled = true
   application_admin_id        = var.application_admin_id != null ? lower(var.application_admin_id) : null
 
-  dataverse = each.value.dataverse == null ? null : {
-    language_code = try(each.value.dataverse.language_code, 1033)
-    currency_code = try(each.value.dataverse.currency_code, "USD")
+  dataverse = {
+    language_code = each.value.dataverse.language_code
+    currency_code = each.value.dataverse.currency_code
     # The Power Platform provider uses "00000000-0000-0000-0000-000000000000" as the sentinel
     # value meaning "no security group restriction". Passing null is not accepted.
     security_group_id = each.value.dataverse.security_group_id != null ? lower(each.value.dataverse.security_group_id) : "00000000-0000-0000-0000-000000000000"
@@ -83,7 +85,7 @@ module "dlp_policy" {
 
 module "pipelines" {
   source   = "rpothin/res-deploymentpipeline/powerplatform"
-  version  = "= 0.1.1"
+  version  = "= 0.1.2"
   for_each = var.pipelines
 
   dev_environment_key = each.value.dev_environment_key

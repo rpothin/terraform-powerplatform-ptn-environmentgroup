@@ -6,7 +6,6 @@ module "this" {
   location    = var.location
 
   # Four environments: two dev streams, one shared test, one pre-production (all Sandbox).
-  # Note: Production environment_type is not compatible with group membership in res-environment v0.1.x.
   environments = {
     "dev-frontend" = {
       display_name     = "${var.name} - Dev Frontend"

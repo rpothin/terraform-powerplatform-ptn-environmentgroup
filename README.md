@@ -273,19 +273,19 @@ The following Modules are called:
 
 Source: rpothin/res-dlppolicy/powerplatform
 
-Version: ~> 0.1
+Version: = 0.1.1
 
 ### <a name="module_environments"></a> [environments](#module\_environments)
 
 Source: rpothin/res-environment/powerplatform
 
-Version: ~> 0.1
+Version: = 0.1.1
 
 ### <a name="module_pipelines"></a> [pipelines](#module\_pipelines)
 
 Source: rpothin/res-deploymentpipeline/powerplatform
 
-Version: ~> 0.1
+Version: = 0.1.0
 
 <!-- TODO (before publishing to Terraform Registry): Replace the relative links below
      with absolute GitHub URLs, e.g.:

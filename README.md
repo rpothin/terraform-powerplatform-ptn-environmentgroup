@@ -80,7 +80,9 @@ Description: Map of Power Platform environments to create. Map key is a stable s
 Minimum 2 environments are required to support at least one pipeline (dev + one stage).
 
 - `display_name`      - Full display name (3–64 chars, alphanumeric/spaces/hyphens/underscores).
-- `environment_type`  - "Sandbox", "Production", or "Trial". Defaults to "Sandbox".
+- `environment_type`  - "Sandbox" or "Trial". Defaults to "Sandbox". Note: "Production" is not  
+                        compatible with environment group membership (group membership implies  
+                        managed\_environment\_enabled = false, which Production requires to be true).
 - `dataverse`         - Dataverse configuration. Defaults to null (no Dataverse). Set to `{}` to provision  
                         Dataverse with defaults (English / USD). Production environments that specify dataverse  
                         must also provide a non-null security\_group\_id.
@@ -226,7 +228,7 @@ Description: Map of slot key → environment details. This is the primary interf
 Each entry contains:
 - `id`            - Power Platform environment ID (UUID)
 - `display_name`  - Environment display name
-- `type`          - Environment type ("Sandbox", "Production", or "Trial")
+- `type`          - Environment type ("Sandbox" or "Trial"; "Production" is not compatible with group membership)
 - `dataverse_url` - Dataverse organisation URL (null if no Dataverse was provisioned)
 - `location`      - Power Platform region (echoes var.location)
 
@@ -251,6 +253,10 @@ Each entry contains:
   Each entry: { environment\_key, stage\_id, deployment\_environment\_id }  
   Use this when promotion order matters; maps are unordered in Terraform.
 
+### <a name="output_tags"></a> [tags](#output\_tags)
+
+Description: The metadata tags passed to this module (echoes var.tags). Power Platform resources do not natively support tags; this output surfaces the values for use by external systems or wrapper modules.
+
 ### <a name="output_workspace_description"></a> [workspace\_description](#output\_workspace\_description)
 
 Description: The workspace description (echoes var.description). Semantic contract consumed by git-integration modules.
@@ -267,19 +273,19 @@ The following Modules are called:
 
 Source: rpothin/res-dlppolicy/powerplatform
 
-Version:
+Version: ~> 0.1
 
 ### <a name="module_environments"></a> [environments](#module\_environments)
 
 Source: rpothin/res-environment/powerplatform
 
-Version:
+Version: ~> 0.1
 
 ### <a name="module_pipelines"></a> [pipelines](#module\_pipelines)
 
 Source: rpothin/res-deploymentpipeline/powerplatform
 
-Version:
+Version: ~> 0.1
 
 <!-- TODO (before publishing to Terraform Registry): Replace the relative links below
      with absolute GitHub URLs, e.g.:

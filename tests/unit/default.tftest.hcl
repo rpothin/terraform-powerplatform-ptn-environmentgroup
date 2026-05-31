@@ -81,8 +81,10 @@ variables {
   # Unit tests use an empty pipelines map. The res-deploymentpipeline module
   # reads data sources whose arguments depend on environment IDs (computed after
   # apply). These are unknown at plan time and cause for_each errors that cannot
-  # be worked around with mock_data alone. Pipeline creation is fully covered by
-  # integration tests.
+  # be worked around with mock_data alone.
+  # NOTE: Pipeline creation is also not tested in integration tests — see the
+  # comment block at the bottom of tests/integration/default.tftest.hcl for the
+  # full explanation. Successful pipeline creation currently has no end-to-end test.
   pipelines = {}
 }
 
@@ -285,7 +287,7 @@ run "rejects_pipeline_with_unknown_dev_env_key" {
   # module to prevent its check block from being evaluated during the continued plan.
   override_module {
     target  = module.dlp_policy
-    outputs = { policy_id = "00000000-0000-0000-0000-000000000000" }
+    outputs = { resource_id = "00000000-0000-0000-0000-000000000000" }
   }
 
   variables {
@@ -306,7 +308,7 @@ run "rejects_pipeline_stage_with_unknown_env_key" {
   # Same cross-variable validation issue as above — override DLP module.
   override_module {
     target  = module.dlp_policy
-    outputs = { policy_id = "00000000-0000-0000-0000-000000000000" }
+    outputs = { resource_id = "00000000-0000-0000-0000-000000000000" }
   }
 
   variables {
@@ -326,7 +328,7 @@ run "rejects_pipeline_with_zero_stages" {
 
   override_module {
     target  = module.dlp_policy
-    outputs = { policy_id = "00000000-0000-0000-0000-000000000000" }
+    outputs = { resource_id = "00000000-0000-0000-0000-000000000000" }
   }
 
   variables {
@@ -346,7 +348,7 @@ run "rejects_pipeline_with_duplicate_stage_env_keys" {
 
   override_module {
     target  = module.dlp_policy
-    outputs = { policy_id = "00000000-0000-0000-0000-000000000000" }
+    outputs = { resource_id = "00000000-0000-0000-0000-000000000000" }
   }
 
   variables {
@@ -373,7 +375,7 @@ run "rejects_invalid_host_environment_id" {
 
   override_module {
     target  = module.dlp_policy
-    outputs = { policy_id = "00000000-0000-0000-0000-000000000000" }
+    outputs = { resource_id = "00000000-0000-0000-0000-000000000000" }
   }
 
   variables {
@@ -392,7 +394,7 @@ run "rejects_http_pipelines_host_url" {
 
   override_module {
     target  = module.dlp_policy
-    outputs = { policy_id = "00000000-0000-0000-0000-000000000000" }
+    outputs = { resource_id = "00000000-0000-0000-0000-000000000000" }
   }
 
   variables {
@@ -411,7 +413,7 @@ run "rejects_malformed_security_group_id" {
 
   override_module {
     target  = module.dlp_policy
-    outputs = { policy_id = "00000000-0000-0000-0000-000000000000" }
+    outputs = { resource_id = "00000000-0000-0000-0000-000000000000" }
   }
 
   variables {
@@ -443,7 +445,7 @@ run "rejects_invalid_lifecycle_state" {
 
   override_module {
     target  = module.dlp_policy
-    outputs = { policy_id = "00000000-0000-0000-0000-000000000000" }
+    outputs = { resource_id = "00000000-0000-0000-0000-000000000000" }
   }
 
   variables {

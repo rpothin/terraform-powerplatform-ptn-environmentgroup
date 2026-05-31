@@ -46,7 +46,9 @@ Map of Power Platform environments to create. Map key is a stable slot identifie
 Minimum 2 environments are required to support at least one pipeline (dev + one stage).
 
 - `display_name`      - Full display name (3–64 chars, alphanumeric/spaces/hyphens/underscores).
-- `environment_type`  - "Sandbox", "Production", or "Trial". Defaults to "Sandbox".
+- `environment_type`  - "Sandbox" or "Trial". Defaults to "Sandbox". Note: "Production" is not
+                        compatible with environment group membership (group membership implies
+                        managed_environment_enabled = false, which Production requires to be true).
 - `dataverse`         - Dataverse configuration. Defaults to null (no Dataverse). Set to `{}` to provision
                         Dataverse with defaults (English / USD). Production environments that specify dataverse
                         must also provide a non-null security_group_id.

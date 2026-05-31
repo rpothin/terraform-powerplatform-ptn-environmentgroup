@@ -15,7 +15,7 @@ Map of slot key → environment details. This is the primary interface contract 
 Each entry contains:
 - `id`            - Power Platform environment ID (UUID)
 - `display_name`  - Environment display name
-- `type`          - Environment type ("Sandbox", "Production", or "Trial")
+- `type`          - Environment type ("Sandbox" or "Trial"; "Production" is not compatible with group membership)
 - `dataverse_url` - Dataverse organisation URL (null if no Dataverse was provisioned)
 - `location`      - Power Platform region (echoes var.location)
 DESCRIPTION
@@ -73,4 +73,9 @@ output "workspace_name" {
 output "workspace_description" {
   description = "The workspace description (echoes var.description). Semantic contract consumed by git-integration modules."
   value       = var.description
+}
+
+output "tags" {
+  description = "The metadata tags passed to this module (echoes var.tags). Power Platform resources do not natively support tags; this output surfaces the values for use by external systems or wrapper modules."
+  value       = var.tags
 }

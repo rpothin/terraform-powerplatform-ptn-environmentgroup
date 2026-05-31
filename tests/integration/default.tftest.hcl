@@ -1,7 +1,7 @@
 # Integration tests — uses real provider, requires OIDC credentials.
 #
 # Prerequisites:
-#   ARM_USE_OIDC=true
+#   POWER_PLATFORM_USE_OIDC=true
 #   POWER_PLATFORM_TENANT_ID=<your-tenant-id>
 #   POWER_PLATFORM_CLIENT_ID=<your-client-id>
 #

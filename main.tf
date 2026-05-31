@@ -1,5 +1,5 @@
 # ============================================================================
-# ENVIRONMENT GROUP - Test
+# ENVIRONMENT GROUP
 # ============================================================================
 
 resource "powerplatform_environment_group" "this" {
@@ -13,6 +13,7 @@ resource "powerplatform_environment_group" "this" {
 
 module "environments" {
   source   = "rpothin/res-environment/powerplatform"
+  version  = "~> 0.1"
   for_each = var.environments
 
   environment = {
@@ -22,12 +23,17 @@ module "environments" {
     environment_group_id = lower(powerplatform_environment_group.this.id)
   }
 
+  # Environments in a group are governed by the group-level DLP and pipeline policy.
+  # Managed Environment features (premium governance overlays) are intentionally disabled
+  # because they require standalone management and are incompatible with group membership.
   managed_environment_enabled = false
   application_admin_id        = var.application_admin_id != null ? lower(var.application_admin_id) : null
 
   dataverse = each.value.dataverse == null ? null : {
-    language_code     = try(each.value.dataverse.language_code, 1033)
-    currency_code     = try(each.value.dataverse.currency_code, "USD")
+    language_code = try(each.value.dataverse.language_code, 1033)
+    currency_code = try(each.value.dataverse.currency_code, "USD")
+    # The Power Platform provider uses "00000000-0000-0000-0000-000000000000" as the sentinel
+    # value meaning "no security group restriction". Passing null is not accepted.
     security_group_id = each.value.dataverse.security_group_id != null ? lower(each.value.dataverse.security_group_id) : "00000000-0000-0000-0000-000000000000"
   }
 
@@ -56,7 +62,8 @@ resource "time_sleep" "provisioning_buffer" {
 # ============================================================================
 
 module "dlp_policy" {
-  source = "rpothin/res-dlppolicy/powerplatform"
+  source  = "rpothin/res-dlppolicy/powerplatform"
+  version = "~> 0.1"
 
   display_name                      = var.dlp_policy.display_name
   default_connectors_classification = local.dlp_default_classification
@@ -76,6 +83,7 @@ module "dlp_policy" {
 
 module "pipelines" {
   source   = "rpothin/res-deploymentpipeline/powerplatform"
+  version  = "~> 0.1"
   for_each = var.pipelines
 
   dev_environment_key = each.value.dev_environment_key

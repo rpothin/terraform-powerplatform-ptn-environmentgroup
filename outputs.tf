@@ -15,7 +15,7 @@ Map of slot key → environment details. This is the primary interface contract 
 Each entry contains:
 - `id`            - Power Platform environment ID (UUID)
 - `display_name`  - Environment display name
-- `type`          - Environment type ("Sandbox", "Trial", or "Production")
+- `type`          - Environment type ("Sandbox" or "Trial")
 - `dataverse_url` - Dataverse organisation URL (null if no Dataverse was provisioned)
 - `location`      - Power Platform region (echoes var.location)
 DESCRIPTION

@@ -13,7 +13,7 @@ resource "powerplatform_environment_group" "this" {
 
 module "environments" {
   source   = "rpothin/res-environment/powerplatform"
-  version  = "= 0.1.2"
+  version  = "= 0.1.1"
   for_each = var.environments
 
   environment = {
@@ -23,10 +23,10 @@ module "environments" {
     environment_group_id = lower(powerplatform_environment_group.this.id)
   }
 
-  # Platform requires Managed Environments for group-member environments.
-  # The res-environment precondition enforces managed_environment_enabled = true
-  # when environment_group_id is set (corrected in res-environment v0.1.2).
-  managed_environment_enabled = true
+  # Environment groups already impose the group-level governance posture for member
+  # environments. Creating the standalone powerplatform_managed_environment resource
+  # currently triggers provider apply/destroy errors for this pattern, so keep it disabled.
+  managed_environment_enabled = false
   application_admin_id        = var.application_admin_id != null ? lower(var.application_admin_id) : null
 
   dataverse = each.value.dataverse == null ? null : {

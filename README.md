@@ -80,17 +80,15 @@ Description: Map of Power Platform environments to create. Map key is a stable s
 Minimum 2 environments are required to support at least one pipeline (dev + one stage).
 
 - `display_name`      - Full display name (3–64 chars, alphanumeric/spaces/hyphens/underscores).
-- `environment_type`  - "Sandbox", "Trial", or "Production". Defaults to "Sandbox". All three types are  
-                        compatible with environment group membership (requires managed\_environment\_enabled = true,  
-                        which this module always sets). Production environments that specify dataverse must  
-                        provide a non-null, non-zero security\_group\_id.
+- `environment_type`  - "Sandbox" or "Trial". Defaults to "Sandbox". Environment groups apply governance  
+                        at the group level, so use Sandbox for production-tier workloads in this pattern.
 - `dataverse`         - Dataverse configuration. Defaults to `{}` (Dataverse provisioned with English / USD).  
-                        All environments in this module require Dataverse (managed\_environment\_enabled = true  
-                        enforces this). Set individual fields to override defaults.
+                        Environment-group members are provisioned with Dataverse by default; set individual fields  
+                        to override defaults.
   - `language_code`     - LCID code (e.g., 1033 for English). Defaults to 1033.
   - `currency_code`     - ISO 4217 code (e.g., "USD"). Defaults to "USD".
-  - `security_group_id` - Entra ID group UUID for access control. Required for Production environments
-                          (must be a non-zero UUID).
+  - `security_group_id` - Optional Entra ID group UUID for access control. The zero UUID disables  
+                          access restriction and is normalized by the module when omitted.
 
 Type:
 
@@ -230,7 +228,7 @@ Description: Map of slot key → environment details. This is the primary interf
 Each entry contains:
 - `id`            - Power Platform environment ID (UUID)
 - `display_name`  - Environment display name
-- `type`          - Environment type ("Sandbox", "Trial", or "Production")
+- `type`          - Environment type ("Sandbox" or "Trial")
 - `dataverse_url` - Dataverse organisation URL (null if no Dataverse was provisioned)
 - `location`      - Power Platform region (echoes var.location)
 
@@ -281,7 +279,7 @@ Version: = 0.1.1
 
 Source: rpothin/res-environment/powerplatform
 
-Version: = 0.1.2
+Version: = 0.1.1
 
 ### <a name="module_pipelines"></a> [pipelines](#module\_pipelines)
 

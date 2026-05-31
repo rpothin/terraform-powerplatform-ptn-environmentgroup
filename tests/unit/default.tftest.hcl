@@ -468,45 +468,11 @@ run "workspace_description_echoes_variable" {
 }
 
 # ---------------------------------------------------------------------------
-# var.environments Production validations
+# var.environments environment_type validations
 # ---------------------------------------------------------------------------
 
-run "rejects_production_environment_without_security_group" {
+run "rejects_production_environment_type" {
   command = plan
-
-  variables {
-    environments = {
-      "dev" = { display_name = "Dev", environment_type = "Sandbox", dataverse = {} }
-      "prod" = {
-        display_name     = "Prod"
-        environment_type = "Production"
-        dataverse        = {}
-      }
-    }
-  }
-
-  expect_failures = [var.environments]
-}
-
-run "rejects_production_environment_with_zero_uuid_security_group" {
-  command = plan
-
-  variables {
-    environments = {
-      "dev" = { display_name = "Dev", environment_type = "Sandbox", dataverse = {} }
-      "prod" = {
-        display_name     = "Prod"
-        environment_type = "Production"
-        dataverse        = { security_group_id = "00000000-0000-0000-0000-000000000000" }
-      }
-    }
-  }
-
-  expect_failures = [var.environments]
-}
-
-run "accepts_production_environment_with_security_group" {
-  command = apply
 
   variables {
     environments = {
@@ -519,15 +485,7 @@ run "accepts_production_environment_with_security_group" {
     }
   }
 
-  assert {
-    condition     = contains(keys(output.environments), "prod")
-    error_message = "Production environment should be present in environments output."
-  }
-
-  assert {
-    condition     = output.environments["prod"].type == "Production"
-    error_message = "Production environment type should be reflected in output."
-  }
+  expect_failures = [var.environments]
 }
 
 # ---------------------------------------------------------------------------

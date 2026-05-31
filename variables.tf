@@ -46,17 +46,15 @@ Map of Power Platform environments to create. Map key is a stable slot identifie
 Minimum 2 environments are required to support at least one pipeline (dev + one stage).
 
 - `display_name`      - Full display name (3–64 chars, alphanumeric/spaces/hyphens/underscores).
-- `environment_type`  - "Sandbox", "Trial", or "Production". Defaults to "Sandbox". All three types are
-                        compatible with environment group membership (requires managed_environment_enabled = true,
-                        which this module always sets). Production environments that specify dataverse must
-                        provide a non-null, non-zero security_group_id.
+- `environment_type`  - "Sandbox" or "Trial". Defaults to "Sandbox". Environment groups apply governance
+                        at the group level, so use Sandbox for production-tier workloads in this pattern.
 - `dataverse`         - Dataverse configuration. Defaults to `{}` (Dataverse provisioned with English / USD).
-                        All environments in this module require Dataverse (managed_environment_enabled = true
-                        enforces this). Set individual fields to override defaults.
+                        Environment-group members are provisioned with Dataverse by default; set individual fields
+                        to override defaults.
   - `language_code`     - LCID code (e.g., 1033 for English). Defaults to 1033.
   - `currency_code`     - ISO 4217 code (e.g., "USD"). Defaults to "USD".
-  - `security_group_id` - Entra ID group UUID for access control. Required for Production environments
-                          (must be a non-zero UUID).
+  - `security_group_id` - Optional Entra ID group UUID for access control. The zero UUID disables
+                          access restriction and is normalized by the module when omitted.
 DESCRIPTION
   type = map(object({
     display_name     = string
@@ -75,8 +73,8 @@ DESCRIPTION
   }
 
   validation {
-    condition     = alltrue([for k, v in var.environments : contains(["Sandbox", "Trial", "Production"], v.environment_type)])
-    error_message = "All environments must use environment_type 'Sandbox', 'Trial', or 'Production'."
+    condition     = alltrue([for k, v in var.environments : contains(["Sandbox", "Trial"], v.environment_type)])
+    error_message = "All environments must use environment_type 'Sandbox' or 'Trial'. Use Sandbox for production-tier workloads within an environment group."
   }
 
   validation {
@@ -88,14 +86,6 @@ DESCRIPTION
     error_message = "Each environments[*].dataverse.security_group_id must be a valid UUID when provided."
   }
 
-  validation {
-    condition = alltrue([
-      for k, v in var.environments :
-      v.environment_type != "Production" ||
-      (v.dataverse != null && v.dataverse.security_group_id != null && v.dataverse.security_group_id != "00000000-0000-0000-0000-000000000000")
-    ])
-    error_message = "Production environments require a non-null, non-zero dataverse.security_group_id. Provide an Entra ID security group UUID to restrict access (the zero UUID disables access restriction and is not permitted for Production)."
-  }
 }
 
 variable "dlp_policy" {

@@ -13,7 +13,7 @@ resource "powerplatform_environment_group" "this" {
 
 module "environments" {
   source   = "rpothin/res-environment/powerplatform"
-  version  = "~> 0.1"
+  version  = "= 0.1.1"
   for_each = var.environments
 
   environment = {
@@ -63,7 +63,7 @@ resource "time_sleep" "provisioning_buffer" {
 
 module "dlp_policy" {
   source  = "rpothin/res-dlppolicy/powerplatform"
-  version = "~> 0.1"
+  version = "= 0.1.1"
 
   display_name                      = var.dlp_policy.display_name
   default_connectors_classification = local.dlp_default_classification
@@ -83,7 +83,7 @@ module "dlp_policy" {
 
 module "pipelines" {
   source   = "rpothin/res-deploymentpipeline/powerplatform"
-  version  = "~> 0.1"
+  version  = "= 0.1.0"
   for_each = var.pipelines
 
   dev_environment_key = each.value.dev_environment_key

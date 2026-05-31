@@ -13,7 +13,7 @@ resource "powerplatform_environment_group" "this" {
 
 module "environments" {
   source   = "rpothin/res-environment/powerplatform"
-  version  = "= 0.1.1"
+  version  = "= 0.1.2"
   for_each = var.environments
 
   environment = {
@@ -23,10 +23,10 @@ module "environments" {
     environment_group_id = lower(powerplatform_environment_group.this.id)
   }
 
-  # Environments in a group are governed by the group-level DLP and pipeline policy.
-  # Managed Environment features (premium governance overlays) are intentionally disabled
-  # because they require standalone management and are incompatible with group membership.
-  managed_environment_enabled = false
+  # Platform requires Managed Environments for group-member environments.
+  # The res-environment precondition enforces managed_environment_enabled = true
+  # when environment_group_id is set (corrected in res-environment v0.1.2).
+  managed_environment_enabled = true
   application_admin_id        = var.application_admin_id != null ? lower(var.application_admin_id) : null
 
   dataverse = each.value.dataverse == null ? null : {
@@ -83,7 +83,7 @@ module "dlp_policy" {
 
 module "pipelines" {
   source   = "rpothin/res-deploymentpipeline/powerplatform"
-  version  = "= 0.1.0"
+  version  = "= 0.1.1"
   for_each = var.pipelines
 
   dev_environment_key = each.value.dev_environment_key

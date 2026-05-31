@@ -34,14 +34,21 @@ variables {
     display_name            = format("tftest-ptn-envgroup-dlp-%s", formatdate("YYYYMMDDhhmmss", timestamp()))
     default_connector_group = "NonBusiness"
   }
+
+  pipelines = {
+    "main" = {
+      dev_environment_key = "dev"
+      stages              = [{ environment_key = "prod" }]
+    }
+  }
+
+  # Allow extra time for the Pipelines Host to asynchronously validate newly-registered
+  # environments. Increase this value if validation checks flap in slow tenants.
+  pipeline_validation_wait_seconds = 60
 }
 
-run "creates_environment_group_with_two_environments" {
+run "creates_environment_group_with_environments_and_pipeline" {
   command = apply
-
-  variables {
-    pipelines = {}
-  }
 
   assert {
     condition     = output.group_id != ""
@@ -64,22 +71,17 @@ run "creates_environment_group_with_two_environments" {
   }
 
   assert {
-    condition     = output.pipelines == {}
-    error_message = "Pipelines should be empty until the environments already exist in state."
+    condition     = length(output.pipelines) == 1
+    error_message = "One pipeline should have been created."
+  }
+
+  assert {
+    condition     = output.pipelines["main"].pipeline_id != ""
+    error_message = "main pipeline_id should be a non-empty GUID after apply."
+  }
+
+  assert {
+    condition     = length(output.pipelines["main"].ordered_stages) == 1
+    error_message = "main pipeline should have one deployment stage."
   }
 }
-
-# Pipeline integration testing is intentionally skipped.
-#
-# The `res-deploymentpipeline` child module uses a `powerplatform_data_records` data source
-# internally whose `rows` attribute is always "(known after apply)" for newly-introduced
-# module instances. This value feeds a `for_each` filter in that module, which Terraform
-# cannot evaluate at plan time — causing an "Invalid for_each argument" error.
-#
-# Even with run-block splitting (environments first, then pipelines) the issue persists
-# because the data source rows remain deferred until after the first apply that introduces
-# the pipeline module instance.
-#
-# This is a known limitation of the current Power Platform provider and cannot be worked
-# around from within a parent module. Pipeline configuration is thoroughly covered by the
-# 22 unit tests in tests/unit/default.tftest.hcl using mock providers.

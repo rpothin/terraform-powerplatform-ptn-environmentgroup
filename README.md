@@ -80,15 +80,17 @@ Description: Map of Power Platform environments to create. Map key is a stable s
 Minimum 2 environments are required to support at least one pipeline (dev + one stage).
 
 - `display_name`      - Full display name (3–64 chars, alphanumeric/spaces/hyphens/underscores).
-- `environment_type`  - "Sandbox" or "Trial". Defaults to "Sandbox". Note: "Production" is not  
-                        compatible with environment group membership (group membership implies  
-                        managed\_environment\_enabled = false, which Production requires to be true).
-- `dataverse`         - Dataverse configuration. Defaults to null (no Dataverse). Set to `{}` to provision  
-                        Dataverse with defaults (English / USD). Production environments that specify dataverse  
-                        must also provide a non-null security\_group\_id.
+- `environment_type`  - "Sandbox", "Trial", or "Production". Defaults to "Sandbox". All three types are  
+                        compatible with environment group membership (requires managed\_environment\_enabled = true,  
+                        which this module always sets). Production environments that specify dataverse must  
+                        provide a non-null, non-zero security\_group\_id.
+- `dataverse`         - Dataverse configuration. Defaults to `{}` (Dataverse provisioned with English / USD).  
+                        All environments in this module require Dataverse (managed\_environment\_enabled = true  
+                        enforces this). Set individual fields to override defaults.
   - `language_code`     - LCID code (e.g., 1033 for English). Defaults to 1033.
   - `currency_code`     - ISO 4217 code (e.g., "USD"). Defaults to "USD".
-  - `security_group_id` - Entra ID group UUID for access control. Required for Production environments.
+  - `security_group_id` - Entra ID group UUID for access control. Required for Production environments
+                          (must be a non-zero UUID).
 
 Type:
 
@@ -100,7 +102,7 @@ map(object({
       language_code     = optional(number, 1033)
       currency_code     = optional(string, "USD")
       security_group_id = optional(string, null)
-    }), null)
+    }), {})
   }))
 ```
 
@@ -228,7 +230,7 @@ Description: Map of slot key → environment details. This is the primary interf
 Each entry contains:
 - `id`            - Power Platform environment ID (UUID)
 - `display_name`  - Environment display name
-- `type`          - Environment type ("Sandbox" or "Trial"; "Production" is not compatible with group membership)
+- `type`          - Environment type ("Sandbox", "Trial", or "Production")
 - `dataverse_url` - Dataverse organisation URL (null if no Dataverse was provisioned)
 - `location`      - Power Platform region (echoes var.location)
 
@@ -279,13 +281,13 @@ Version: = 0.1.1
 
 Source: rpothin/res-environment/powerplatform
 
-Version: = 0.1.1
+Version: = 0.1.2
 
 ### <a name="module_pipelines"></a> [pipelines](#module\_pipelines)
 
 Source: rpothin/res-deploymentpipeline/powerplatform
 
-Version: = 0.1.0
+Version: = 0.1.1
 
 <!-- TODO (before publishing to Terraform Registry): Replace the relative links below
      with absolute GitHub URLs, e.g.:

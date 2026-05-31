@@ -17,9 +17,9 @@ mock_provider "powerplatform" {
     }
   }
 
-  # The res-deploymentpipeline module queries Dataverse for existing deployment
-  # environment records and for environment validation status. These mocks satisfy
-  # both data sources when the pipeline module is instantiated (integration tests).
+  # The res-deploymentpipeline module queries Dataverse for root business unit lookup
+  # and for environment validation status. These mocks satisfy both data sources when
+  # the pipeline module is instantiated in unit tests.
   mock_data "powerplatform_data_records" {
     defaults = {
       rows = [{
@@ -78,13 +78,8 @@ variables {
   pipelines_host_url               = "https://org.crm.dynamics.com"
   pipeline_validation_wait_seconds = 0
 
-  # Unit tests use an empty pipelines map. The res-deploymentpipeline module
-  # reads data sources whose arguments depend on environment IDs (computed after
-  # apply). These are unknown at plan time and cause for_each errors that cannot
-  # be worked around with mock_data alone.
-  # NOTE: Pipeline creation is also not tested in integration tests — see the
-  # comment block at the bottom of tests/integration/default.tftest.hcl for the
-  # full explanation. Successful pipeline creation currently has no end-to-end test.
+  # Default: no pipelines so the 22 validation tests run without pipeline module overhead.
+  # A separate run block below tests the happy path with a non-empty pipelines map.
   pipelines = {}
 }
 
@@ -222,7 +217,7 @@ run "rejects_invalid_environment_type" {
   variables {
     environments = {
       "dev"  = { display_name = "Dev", environment_type = "Sandbox", dataverse = {} }
-      "test" = { display_name = "Test", environment_type = "Production" }
+      "test" = { display_name = "Test", environment_type = "Developer" }
     }
   }
 
@@ -469,6 +464,119 @@ run "workspace_description_echoes_variable" {
   assert {
     condition     = output.workspace_description == "My workspace description"
     error_message = "workspace_description should echo var.description."
+  }
+}
+
+# ---------------------------------------------------------------------------
+# var.environments Production validations
+# ---------------------------------------------------------------------------
+
+run "rejects_production_environment_without_security_group" {
+  command = plan
+
+  variables {
+    environments = {
+      "dev" = { display_name = "Dev", environment_type = "Sandbox", dataverse = {} }
+      "prod" = {
+        display_name     = "Prod"
+        environment_type = "Production"
+        dataverse        = {}
+      }
+    }
+  }
+
+  expect_failures = [var.environments]
+}
+
+run "rejects_production_environment_with_zero_uuid_security_group" {
+  command = plan
+
+  variables {
+    environments = {
+      "dev" = { display_name = "Dev", environment_type = "Sandbox", dataverse = {} }
+      "prod" = {
+        display_name     = "Prod"
+        environment_type = "Production"
+        dataverse        = { security_group_id = "00000000-0000-0000-0000-000000000000" }
+      }
+    }
+  }
+
+  expect_failures = [var.environments]
+}
+
+run "accepts_production_environment_with_security_group" {
+  command = apply
+
+  variables {
+    environments = {
+      "dev" = { display_name = "Dev", environment_type = "Sandbox", dataverse = {} }
+      "prod" = {
+        display_name     = "Prod"
+        environment_type = "Production"
+        dataverse        = { security_group_id = "cccccccc-cccc-cccc-cccc-cccccccccccc" }
+      }
+    }
+  }
+
+  assert {
+    condition     = contains(keys(output.environments), "prod")
+    error_message = "Production environment should be present in environments output."
+  }
+
+  assert {
+    condition     = output.environments["prod"].type == "Production"
+    error_message = "Production environment type should be reflected in output."
+  }
+}
+
+# ---------------------------------------------------------------------------
+# Pipeline happy-path
+# ---------------------------------------------------------------------------
+
+run "plan_succeeds_with_pipeline" {
+  # override_module bypasses the local-exec "sleep" provisioner inside res-deploymentpipeline
+  # (platform-specific Unix command). This specifically validates that a non-empty pipelines
+  # map produces correct output structure after the day-1 for_each fix in v0.1.1.
+  command = apply
+
+  variables {
+    pipelines = {
+      "main" = {
+        dev_environment_key = "dev"
+        stages              = [{ environment_key = "uat" }]
+      }
+    }
+  }
+
+  override_module {
+    target = module.pipelines["main"]
+    outputs = {
+      pipeline_id                = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"
+      pipeline_name              = "TestGroup - main"
+      deployment_stage_ids       = { "uat" = "ffffffff-ffff-ffff-ffff-ffffffffffff" }
+      deployment_environment_ids = { "uat" = "gggggggg-gggg-gggg-gggg-gggggggggggg" }
+    }
+  }
+
+  assert {
+    condition     = length(output.pipelines) == 1
+    error_message = "pipelines output should contain one entry."
+  }
+
+  assert {
+    condition     = contains(keys(output.pipelines), "main")
+    error_message = "pipelines output should contain the 'main' pipeline key."
+  }
+
+  assert {
+    condition     = output.pipelines["main"].pipeline_id == "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"
+    error_message = "pipeline_id should match the mocked value."
+  }
+
+  assert {
+    condition     = length(output.pipelines["main"].ordered_stages) == 1
+    error_message = "ordered_stages should have one entry matching the single stage."
   }
 }
 

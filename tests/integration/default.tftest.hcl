@@ -13,8 +13,6 @@
 #   pipelines_host_url  — Dataverse API URL of the Pipelines Host environment
 #
 # Tenant requirements:
-#   - Managed Environments premium licensing (required for environment group membership
-#     with managed_environment_enabled = true; see res-environment Troubleshooting).
 #   - Power Platform Pipelines solution installed in the Pipelines Host environment.
 
 variables {

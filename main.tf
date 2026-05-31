@@ -23,11 +23,10 @@ module "environments" {
     environment_group_id = lower(powerplatform_environment_group.this.id)
   }
 
-  # The Power Platform requires environments in an environment group to be Managed Environments.
-  # Setting managed_environment_enabled = true satisfies this platform requirement and creates
-  # the powerplatform_managed_environment resource. The group's published rule set then governs
-  # enforcement; env-level managed settings serve as the initial baseline.
-  managed_environment_enabled = true
+  # Environments in a group are governed by the group-level DLP and pipeline policy.
+  # Managed Environment features (premium governance overlays) are intentionally disabled
+  # because they require standalone management and are incompatible with group membership.
+  managed_environment_enabled = false
   application_admin_id        = var.application_admin_id != null ? lower(var.application_admin_id) : null
 
   dataverse = each.value.dataverse == null ? null : {

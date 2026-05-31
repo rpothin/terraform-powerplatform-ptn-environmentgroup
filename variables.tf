@@ -46,13 +46,15 @@ Map of Power Platform environments to create. Map key is a stable slot identifie
 Minimum 2 environments are required to support at least one pipeline (dev + one stage).
 
 - `display_name`      - Full display name (3–64 chars, alphanumeric/spaces/hyphens/underscores).
-- `environment_type`  - "Sandbox", "Trial", or "Production". Defaults to "Sandbox".
+- `environment_type`  - "Sandbox" or "Trial". Defaults to "Sandbox". Note: "Production" is not
+                        compatible with environment group membership (group membership implies
+                        managed_environment_enabled = false, which Production requires to be true).
 - `dataverse`         - Dataverse configuration. Defaults to null (no Dataverse). Set to `{}` to provision
                         Dataverse with defaults (English / USD). Production environments that specify dataverse
-                        must also provide a non-null `security_group_id`.
+                        must also provide a non-null security_group_id.
   - `language_code`     - LCID code (e.g., 1033 for English). Defaults to 1033.
   - `currency_code`     - ISO 4217 code (e.g., "USD"). Defaults to "USD".
-  - `security_group_id` - Entra ID group UUID for access control. Required for Production environments with Dataverse.
+  - `security_group_id` - Entra ID group UUID for access control. Required for Production environments.
 DESCRIPTION
   type = map(object({
     display_name     = string
@@ -71,8 +73,8 @@ DESCRIPTION
   }
 
   validation {
-    condition     = alltrue([for k, v in var.environments : contains(["Sandbox", "Trial", "Production"], v.environment_type)])
-    error_message = "All environments must use environment_type 'Sandbox', 'Trial', or 'Production'."
+    condition     = alltrue([for k, v in var.environments : contains(["Sandbox", "Trial"], v.environment_type)])
+    error_message = "All environments must use environment_type 'Sandbox' or 'Trial'. Production environments require managed_environment_enabled = true (standalone governance), which is mutually exclusive with environment group membership (governance from the group). Use Sandbox for production-tier workloads within a group."
   }
 
   validation {

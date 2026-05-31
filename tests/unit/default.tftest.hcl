@@ -49,21 +49,6 @@ mock_provider "powerplatform" {
 mock_provider "time" {}
 
 # ---------------------------------------------------------------------------
-# File-level module override: bypass the registry res-environment module's
-# lifecycle preconditions. ptn-environmentgroup unit tests focus solely on
-# the pattern module's own logic; res-environment has its own test suite.
-# ---------------------------------------------------------------------------
-override_module {
-  target = module.environments
-  outputs = {
-    environment_id           = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
-    environment_display_name = "Mock Environment"
-    environment_url          = null
-  }
-}
-
-
-# ---------------------------------------------------------------------------
 # Shared variable defaults reused across test runs.
 # ---------------------------------------------------------------------------
 
@@ -237,37 +222,11 @@ run "rejects_invalid_environment_type" {
   variables {
     environments = {
       "dev"  = { display_name = "Dev", environment_type = "Sandbox", dataverse = {} }
-      "test" = { display_name = "Test", environment_type = "Blah" }
+      "test" = { display_name = "Test", environment_type = "Production" }
     }
   }
 
   expect_failures = [var.environments]
-}
-
-run "accepts_production_environment_type" {
-  command = apply
-
-  variables {
-    environments = {
-      "dev" = {
-        display_name     = "TestGroup - Dev"
-        environment_type = "Sandbox"
-        dataverse        = {}
-      }
-      "prod" = {
-        display_name     = "TestGroup - Prod"
-        environment_type = "Production"
-        # Production environments with Dataverse require a non-zero security_group_id
-        # (enforced by a lifecycle precondition in res-environment).
-        dataverse = { security_group_id = "22222222-2222-2222-2222-222222222222" }
-      }
-    }
-  }
-
-  assert {
-    condition     = length(output.environments) == 2
-    error_message = "Production environment type should be accepted in an environment group."
-  }
 }
 
 run "rejects_malformed_dataverse_security_group_id" {

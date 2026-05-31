@@ -78,7 +78,6 @@ jobs:
   security:
     name: Trivy Security Scan
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -89,7 +88,7 @@ jobs:
           scan-type: config
           scan-ref: .
           severity: HIGH,CRITICAL
-          exit-code: "0"
+          exit-code: "1"
           version: "v0.69.3"
 
   unit:

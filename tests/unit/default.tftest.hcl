@@ -471,8 +471,8 @@ run "workspace_description_echoes_variable" {
 # var.environments environment_type validations
 # ---------------------------------------------------------------------------
 
-run "accepts_production_environment_type" {
-  command = apply
+run "rejects_production_environment_type" {
+  command = plan
 
   variables {
     environments = {
@@ -485,10 +485,7 @@ run "accepts_production_environment_type" {
     }
   }
 
-  assert {
-    condition     = var.environments["prod"].environment_type == "Production"
-    error_message = "Production environment_type should be accepted."
-  }
+  expect_failures = [var.environments]
 }
 
 # ---------------------------------------------------------------------------

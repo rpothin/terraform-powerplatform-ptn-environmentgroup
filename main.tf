@@ -13,7 +13,7 @@ resource "powerplatform_environment_group" "this" {
 
 module "environments" {
   source   = "rpothin/res-environment/powerplatform"
-  version  = "= 0.1.3"
+  version  = "= 0.1.1"
   for_each = var.environments
 
   environment = {
@@ -23,12 +23,11 @@ module "environments" {
     environment_group_id = lower(powerplatform_environment_group.this.id)
   }
 
-  # res-environment v0.1.2+ requires managed_environment_enabled = true whenever
-  # environment_group_id is set (platform rule). Provider bug #931 (which caused
-  # "invalid result object after apply") is fixed in provider v4.0.0; our ~> 4.0
-  # constraint already enforces the minimum. Tenant Managed Environments premium
-  # licensing is required — see res-environment Troubleshooting for details.
-  managed_environment_enabled = true
+  # Environment groups already impose the group-level governance posture for member
+  # environments. Creating the standalone powerplatform_managed_environment resource
+  # still triggers provider apply errors for this pattern in integration testing, so
+  # keep it disabled until the upstream provider behavior is actually resolved.
+  managed_environment_enabled = false
   application_admin_id        = var.application_admin_id != null ? lower(var.application_admin_id) : null
 
   dataverse = {

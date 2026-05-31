@@ -46,10 +46,9 @@ Map of Power Platform environments to create. Map key is a stable slot identifie
 Minimum 2 environments are required to support at least one pipeline (dev + one stage).
 
 - `display_name`      - Full display name (3–64 chars, alphanumeric/spaces/hyphens/underscores).
-- `environment_type`  - "Sandbox", "Trial", or "Production". Defaults to "Sandbox".
-                        All three types support environment group membership.
-                        Note: changing an existing environment's type (e.g., Sandbox → Production)
-                        forces replacement of that environment.
+- `environment_type`  - "Sandbox" or "Trial". Defaults to "Sandbox". Environment groups apply governance
+                        at the group level, so use Sandbox for production-tier workloads in this pattern.
+                        Note: changing an existing environment's type forces replacement of that environment.
 - `dataverse`         - Dataverse configuration. Defaults to `{}` (Dataverse provisioned with English / USD).
                         Cannot be null — all environment group members require Dataverse.
                         Set individual fields to override defaults.
@@ -75,8 +74,8 @@ DESCRIPTION
   }
 
   validation {
-    condition     = alltrue([for k, v in var.environments : contains(["Sandbox", "Trial", "Production"], v.environment_type)])
-    error_message = "All environments must use environment_type 'Sandbox', 'Trial', or 'Production'."
+    condition     = alltrue([for k, v in var.environments : contains(["Sandbox", "Trial"], v.environment_type)])
+    error_message = "All environments must use environment_type 'Sandbox' or 'Trial'. Use Sandbox for production-tier workloads within an environment group."
   }
 
   validation {

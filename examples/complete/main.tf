@@ -5,7 +5,7 @@ module "this" {
   description = var.description
   location    = var.location
 
-  # Four environments: two dev streams, one shared test, one pre-production (all Sandbox).
+  # Four environments: two dev streams, one shared test, one production.
   environments = {
     "dev-frontend" = {
       display_name     = "${var.name} - Dev Frontend"
@@ -26,9 +26,9 @@ module "this" {
       environment_type = "Sandbox"
       dataverse        = {}
     }
-    "preprod" = {
-      display_name     = "${var.name} - Pre-Prod"
-      environment_type = "Sandbox"
+    "prod" = {
+      display_name     = "${var.name} - Prod"
+      environment_type = "Production"
       dataverse        = {}
     }
   }
@@ -56,7 +56,7 @@ module "this" {
           environment_key = "test"
         },
         {
-          environment_key                = "preprod"
+          environment_key                = "prod"
           require_predeployment_approval = true
         }
       ]
@@ -69,7 +69,7 @@ module "this" {
           environment_key = "test"
         },
         {
-          environment_key                = "preprod"
+          environment_key                = "prod"
           require_predeployment_approval = true
         }
       ]

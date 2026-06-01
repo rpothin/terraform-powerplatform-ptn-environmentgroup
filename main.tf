@@ -13,7 +13,7 @@ resource "powerplatform_environment_group" "this" {
 
 module "environments" {
   source   = "rpothin/res-environment/powerplatform"
-  version  = "= 0.1.1"
+  version  = "= 0.1.4"
   for_each = var.environments
 
   environment = {
@@ -23,10 +23,13 @@ module "environments" {
     environment_group_id = lower(powerplatform_environment_group.this.id)
   }
 
-  # Environment groups already impose the group-level governance posture for member
-  # environments. Creating the standalone powerplatform_managed_environment resource
-  # still triggers provider apply errors for this pattern in integration testing, so
-  # keep it disabled until the upstream provider behavior is actually resolved.
+  # Intentional escape hatch documented in res-environment v0.1.4 (PR #6): the
+  # group→managed_environment_enabled=true lifecycle precondition was removed, making
+  # managed_environment_enabled = false a valid temporary pattern for group members.
+  # The powerplatform_managed_environment resource returns "Provider returned invalid
+  # result object after apply" for multiple attributes when an environment belongs to
+  # an environment group (confirmed provider bug in v4.1.0). Restore to true once the
+  # upstream provider bug is resolved.
   managed_environment_enabled = false
   application_admin_id        = var.application_admin_id != null ? lower(var.application_admin_id) : null
 
@@ -64,7 +67,7 @@ resource "time_sleep" "provisioning_buffer" {
 
 module "dlp_policy" {
   source  = "rpothin/res-dlppolicy/powerplatform"
-  version = "= 0.1.1"
+  version = "= 0.1.2"
 
   display_name                      = var.dlp_policy.display_name
   default_connectors_classification = local.dlp_default_classification

@@ -471,8 +471,8 @@ run "workspace_description_echoes_variable" {
 # var.environments environment_type validations
 # ---------------------------------------------------------------------------
 
-run "rejects_production_environment_type" {
-  command = plan
+run "accepts_production_environment_type" {
+  command = apply
 
   variables {
     environments = {
@@ -483,9 +483,28 @@ run "rejects_production_environment_type" {
         dataverse        = { security_group_id = "cccccccc-cccc-cccc-cccc-cccccccccccc" }
       }
     }
+    pipelines = {
+      "main" = {
+        dev_environment_key = "dev"
+        stages              = [{ environment_key = "prod" }]
+      }
+    }
   }
 
-  expect_failures = [var.environments]
+  override_module {
+    target = module.pipelines["main"]
+    outputs = {
+      pipeline_id                = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"
+      pipeline_name              = "TestGroup - main"
+      deployment_stage_ids       = { "prod" = "ffffffff-ffff-ffff-ffff-ffffffffffff" }
+      deployment_environment_ids = { "prod" = "gggggggg-gggg-gggg-gggg-gggggggggggg" }
+    }
+  }
+
+  assert {
+    condition     = output.environments["prod"].type == "Production"
+    error_message = "environments[prod].type should be 'Production' when environment_type = 'Production' is set."
+  }
 }
 
 # ---------------------------------------------------------------------------

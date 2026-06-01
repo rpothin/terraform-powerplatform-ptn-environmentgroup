@@ -80,8 +80,7 @@ Description: Map of Power Platform environments to create. Map key is a stable s
 Minimum 2 environments are required to support at least one pipeline (dev + one stage).
 
 - `display_name`      - Full display name (3–64 chars, alphanumeric/spaces/hyphens/underscores).
-- `environment_type`  - "Sandbox" or "Trial". Defaults to "Sandbox". Environment groups apply governance  
-                        at the group level, so use Sandbox for production-tier workloads in this pattern.  
+- `environment_type`  - "Sandbox", "Production", or "Trial". Defaults to "Sandbox".  
                         Note: changing an existing environment's type forces replacement of that environment.
 - `dataverse`         - Dataverse configuration. Defaults to `{}` (Dataverse provisioned with English / USD).  
                         Cannot be null — all environment group members require Dataverse.  
@@ -229,7 +228,7 @@ Description: Map of slot key → environment details. This is the primary interf
 Each entry contains:
 - `id`            - Power Platform environment ID (UUID)
 - `display_name`  - Environment display name
-- `type`          - Environment type ("Sandbox" or "Trial")
+- `type`          - Environment type ("Sandbox", "Trial", or "Production")
 - `dataverse_url` - Dataverse organisation URL (null if no Dataverse was provisioned)
 - `location`      - Power Platform region (echoes var.location)
 
@@ -274,13 +273,13 @@ The following Modules are called:
 
 Source: rpothin/res-dlppolicy/powerplatform
 
-Version: = 0.1.1
+Version: = 0.1.2
 
 ### <a name="module_environments"></a> [environments](#module\_environments)
 
 Source: rpothin/res-environment/powerplatform
 
-Version: = 0.1.1
+Version: = 0.1.4
 
 ### <a name="module_pipelines"></a> [pipelines](#module\_pipelines)
 

@@ -28,7 +28,7 @@ variables {
     }
     "prod" = {
       display_name     = format("tfprd%s", substr(md5(timestamp()), 0, 6))
-      environment_type = "Sandbox"
+      environment_type = "Production"
       dataverse        = {}
     }
   }
@@ -64,6 +64,11 @@ run "creates_environment_group_with_environments_dlp_and_pipeline" {
   assert {
     condition     = length(output.environments) == 2
     error_message = "Two environments should have been created."
+  }
+
+  assert {
+    condition     = output.environments["prod"].type == "Production"
+    error_message = "prod environment should have type 'Production'."
   }
 
   assert {

@@ -191,11 +191,11 @@ Default: `"active"`
 
 ### <a name="input_pipeline_validation_wait_seconds"></a> [pipeline\_validation\_wait\_seconds](#input\_pipeline\_validation\_wait\_seconds)
 
-Description: Seconds to wait after registering deployment environments in the Pipelines Host before checking their validation status. The Pipelines Host validates environments asynchronously; increase this value if your host is slow to validate. Set to 0 to skip the wait (useful in tests).
+Description: Seconds to wait after registering deployment environments in the Pipelines Host before checking their validation status. The Pipelines Host validates environments asynchronously. Defaults to 180s for reliable validation in CI and slower tenants; set higher if needed, or 0 to skip waiting (useful in tests).
 
 Type: `number`
 
-Default: `15`
+Default: `180`
 
 ### <a name="input_security_group_id"></a> [security\_group\_id](#input\_security\_group\_id)
 

@@ -263,9 +263,9 @@ variable "tags" {
 }
 
 variable "pipeline_validation_wait_seconds" {
-  description = "Seconds to wait after registering deployment environments in the Pipelines Host before checking their validation status. The Pipelines Host validates environments asynchronously; increase this value if your host is slow to validate. Set to 0 to skip the wait (useful in tests)."
+  description = "Seconds to wait after registering deployment environments in the Pipelines Host before checking their validation status. The Pipelines Host validates environments asynchronously. Defaults to 180s for reliable validation in CI and slower tenants; set higher if needed, or 0 to skip waiting (useful in tests)."
   type        = number
-  default     = 15
+  default     = 180
   nullable    = false
 
   validation {

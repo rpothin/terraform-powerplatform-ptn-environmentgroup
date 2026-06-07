@@ -24,12 +24,16 @@ variables {
     "dev" = {
       display_name     = format("tfdev%s", substr(md5(timestamp()), 0, 6))
       environment_type = "Sandbox"
-      dataverse        = {}
+      dataverse = {
+        security_group_id = "6a199811-5433-4076-81e8-1ca7ad8ffb67"
+      }
     }
     "prod" = {
       display_name     = format("tfprd%s", substr(md5(timestamp()), 0, 6))
       environment_type = "Production"
-      dataverse        = {}
+      dataverse = {
+        security_group_id = "6a199811-5433-4076-81e8-1ca7ad8ffb67"
+      }
     }
   }
 

@@ -11,6 +11,7 @@
 # Required variables (set via .tfvars or TF_VAR_ environment variables):
 #   host_environment_id — UUID of the Pipelines Host environment
 #   pipelines_host_url  — Dataverse API URL of the Pipelines Host environment
+#   security_group_id   — Entra ID security group object ID (UUID) used for environment access restrictions
 #
 # Tenant requirements:
 #   - Power Platform Pipelines solution installed in the Pipelines Host environment.
@@ -25,14 +26,14 @@ variables {
       display_name     = format("tfdev%s", substr(md5(timestamp()), 0, 6))
       environment_type = "Sandbox"
       dataverse = {
-        security_group_id = "6a199811-5433-4076-81e8-1ca7ad8ffb67"
+        security_group_id = var.security_group_id
       }
     }
     "prod" = {
       display_name     = format("tfprd%s", substr(md5(timestamp()), 0, 6))
       environment_type = "Production"
       dataverse = {
-        security_group_id = "6a199811-5433-4076-81e8-1ca7ad8ffb67"
+        security_group_id = var.security_group_id
       }
     }
   }

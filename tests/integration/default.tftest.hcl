@@ -16,6 +16,10 @@
 # Tenant requirements:
 #   - Power Platform Pipelines solution installed in the Pipelines Host environment.
 
+variable "security_group_id" {
+  type = string
+}
+
 variables {
   # Use per-run timestamps so Dataverse domain names do not collide with prior CI runs.
   name     = format("tftest-ptn-envgroup-%s", formatdate("YYYYMMDDhhmmss", timestamp()))

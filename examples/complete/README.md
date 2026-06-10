@@ -20,15 +20,65 @@ No resources.
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
 
-No required inputs.
+The following input variables are required:
+
+### <a name="input_host_environment_id"></a> [host\_environment\_id](#input\_host\_environment\_id)
+
+Description: UUID of the Pipelines Host environment.
+
+Type: `string`
+
+### <a name="input_pipelines_host_url"></a> [pipelines\_host\_url](#input\_pipelines\_host\_url)
+
+Description: Dataverse API URL of the Pipelines Host environment.
+
+Type: `string`
+
+### <a name="input_prod_security_group_id"></a> [prod\_security\_group\_id](#input\_prod\_security\_group\_id)
+
+Description: Entra ID security group UUID to restrict access to the production environment. Required because Production Dataverse environments must have an explicit security group.
+
+Type: `string`
 
 ## Optional Inputs
 
 The following input variables are optional (have default values):
 
+### <a name="input_application_admin_id"></a> [application\_admin\_id](#input\_application\_admin\_id)
+
+Description: Optional Azure AD service principal UUID for environment admin role.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_description"></a> [description](#input\_description)
+
+Description: Optional description of the environment group.
+
+Type: `string`
+
+Default: `"Customer Portal - multi-solution ALM environment group"`
+
+### <a name="input_dev_security_group_id"></a> [dev\_security\_group\_id](#input\_dev\_security\_group\_id)
+
+Description: Optional Entra ID security group UUID to restrict access to development environments.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_lifecycle_state"></a> [lifecycle\_state](#input\_lifecycle\_state)
+
+Description: Lifecycle state for all pipeline records: 'active' or 'inactive'.
+
+Type: `string`
+
+Default: `"active"`
+
 ### <a name="input_location"></a> [location](#input\_location)
 
-Description: The geographic location for the resource.
+Description: Power Platform geographic region for all environments.
 
 Type: `string`
 
@@ -36,15 +86,23 @@ Default: `"unitedstates"`
 
 ### <a name="input_name"></a> [name](#input\_name)
 
-Description: The name of the resource.
+Description: Base name for the environment group. Used as prefix for all display names.
 
 Type: `string`
 
-Default: `"example-complete"`
+Default: `"CustomerPortal"`
+
+### <a name="input_security_group_id"></a> [security\_group\_id](#input\_security\_group\_id)
+
+Description: Optional Entra ID security group UUID for pipeline sharing access.
+
+Type: `string`
+
+Default: `null`
 
 ### <a name="input_tags"></a> [tags](#input\_tags)
 
-Description: A map of tags to apply to the resource.
+Description: Metadata tags for the deployment.
 
 Type: `map(string)`
 
@@ -54,7 +112,7 @@ Default:
 {
   "environment": "development",
   "managed_by": "terraform",
-  "project": "power-platform-module"
+  "project": "customer-portal"
 }
 ```
 
@@ -62,13 +120,29 @@ Default:
 
 The following outputs are exported:
 
-### <a name="output_name"></a> [name](#output\_name)
+### <a name="output_dlp_policy_id"></a> [dlp\_policy\_id](#output\_dlp\_policy\_id)
 
-Description: The name of the managed resource.
+Description: The GUID of the DLP policy.
 
-### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
+### <a name="output_environments"></a> [environments](#output\_environments)
 
-Description: The ID of the managed resource.
+Description: Map of slot key → environment details.
+
+### <a name="output_group_display_name"></a> [group\_display\_name](#output\_group\_display\_name)
+
+Description: The display name of the environment group.
+
+### <a name="output_group_id"></a> [group\_id](#output\_group\_id)
+
+Description: The GUID of the environment group.
+
+### <a name="output_pipelines"></a> [pipelines](#output\_pipelines)
+
+Description: Map of pipeline key → pipeline details including ordered stages.
+
+### <a name="output_workspace_name"></a> [workspace\_name](#output\_workspace\_name)
+
+Description: The workspace name. Semantic contract consumed by git-integration modules.
 
 ## Modules
 

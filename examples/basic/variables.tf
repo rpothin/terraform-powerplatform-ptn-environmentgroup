@@ -1,11 +1,22 @@
 variable "name" {
-  description = "The name of the resource."
+  description = "Base name for the environment group and all resources. Used as prefix for display names."
   type        = string
-  default     = "example-basic"
+  default     = "MyProject"
 }
 
 variable "location" {
-  description = "The geographic location for the resource."
+  description = "Power Platform geographic region for all environments."
   type        = string
   default     = "unitedstates"
 }
+
+variable "host_environment_id" {
+  description = "UUID of the Pipelines Host environment."
+  type        = string
+}
+
+variable "pipelines_host_url" {
+  description = "Dataverse API URL of the Pipelines Host environment."
+  type        = string
+}
+

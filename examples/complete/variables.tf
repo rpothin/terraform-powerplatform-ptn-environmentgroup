@@ -1,21 +1,67 @@
 variable "name" {
-  description = "The name of the resource."
+  description = "Base name for the environment group. Used as prefix for all display names."
   type        = string
-  default     = "example-complete"
+  default     = "CustomerPortal"
+}
+
+variable "description" {
+  description = "Optional description of the environment group."
+  type        = string
+  default     = "Customer Portal - multi-solution ALM environment group"
 }
 
 variable "location" {
-  description = "The geographic location for the resource."
+  description = "Power Platform geographic region for all environments."
   type        = string
   default     = "unitedstates"
 }
 
+variable "host_environment_id" {
+  description = "UUID of the Pipelines Host environment."
+  type        = string
+}
+
+variable "pipelines_host_url" {
+  description = "Dataverse API URL of the Pipelines Host environment."
+  type        = string
+}
+
+variable "security_group_id" {
+  description = "Optional Entra ID security group UUID for pipeline sharing access."
+  type        = string
+  default     = null
+}
+
+variable "dev_security_group_id" {
+  description = "Optional Entra ID security group UUID to restrict access to development environments."
+  type        = string
+  default     = null
+}
+
+variable "prod_security_group_id" {
+  description = "Entra ID security group UUID to restrict access to the production environment. Required because Production Dataverse environments must have an explicit security group."
+  type        = string
+}
+
+variable "application_admin_id" {
+  description = "Optional Azure AD service principal UUID for environment admin role."
+  type        = string
+  default     = null
+}
+
+variable "lifecycle_state" {
+  description = "Lifecycle state for all pipeline records: 'active' or 'inactive'."
+  type        = string
+  default     = "active"
+}
+
 variable "tags" {
-  description = "A map of tags to apply to the resource."
+  description = "Metadata tags for the deployment."
   type        = map(string)
   default = {
     environment = "development"
-    project     = "power-platform-module"
+    project     = "customer-portal"
     managed_by  = "terraform"
   }
 }
+

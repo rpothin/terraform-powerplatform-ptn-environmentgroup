@@ -20,7 +20,19 @@ No resources.
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
 
-No required inputs.
+The following input variables are required:
+
+### <a name="input_host_environment_id"></a> [host\_environment\_id](#input\_host\_environment\_id)
+
+Description: UUID of the Pipelines Host environment.
+
+Type: `string`
+
+### <a name="input_pipelines_host_url"></a> [pipelines\_host\_url](#input\_pipelines\_host\_url)
+
+Description: Dataverse API URL of the Pipelines Host environment.
+
+Type: `string`
 
 ## Optional Inputs
 
@@ -28,7 +40,7 @@ The following input variables are optional (have default values):
 
 ### <a name="input_location"></a> [location](#input\_location)
 
-Description: The geographic location for the resource.
+Description: Power Platform geographic region for all environments.
 
 Type: `string`
 
@@ -36,23 +48,31 @@ Default: `"unitedstates"`
 
 ### <a name="input_name"></a> [name](#input\_name)
 
-Description: The name of the resource.
+Description: Base name for the environment group and all resources. Used as prefix for display names.
 
 Type: `string`
 
-Default: `"example-basic"`
+Default: `"MyProject"`
 
 ## Outputs
 
 The following outputs are exported:
 
-### <a name="output_name"></a> [name](#output\_name)
+### <a name="output_dlp_policy_id"></a> [dlp\_policy\_id](#output\_dlp\_policy\_id)
 
-Description: The name of the managed resource.
+Description: The GUID of the DLP policy.
 
-### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
+### <a name="output_environments"></a> [environments](#output\_environments)
 
-Description: The ID of the managed resource.
+Description: Map of slot key → environment details.
+
+### <a name="output_group_id"></a> [group\_id](#output\_group\_id)
+
+Description: The GUID of the environment group.
+
+### <a name="output_pipelines"></a> [pipelines](#output\_pipelines)
+
+Description: Map of pipeline key → pipeline details.
 
 ## Modules
 

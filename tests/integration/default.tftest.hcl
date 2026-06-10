@@ -11,12 +11,12 @@
 # Required variables (set via .tfvars or TF_VAR_ environment variables):
 #   host_environment_id — UUID of the Pipelines Host environment
 #   pipelines_host_url  — Dataverse API URL of the Pipelines Host environment
-#   security_group_id   — Entra ID security group object ID (UUID) used for environment access restrictions
+#   environment_security_group_id — Entra ID security group object ID (UUID) used for environment access restrictions
 #
 # Tenant requirements:
 #   - Power Platform Pipelines solution installed in the Pipelines Host environment.
 
-variable "security_group_id" {
+variable "environment_security_group_id" {
   type = string
 }
 
@@ -30,17 +30,21 @@ variables {
       display_name     = format("tfdev%s", substr(md5(timestamp()), 0, 6))
       environment_type = "Sandbox"
       dataverse = {
-        security_group_id = var.security_group_id
+        security_group_id = var.environment_security_group_id
       }
     }
     "prod" = {
       display_name     = format("tfprd%s", substr(md5(timestamp()), 0, 6))
       environment_type = "Production"
       dataverse = {
-        security_group_id = var.security_group_id
+        security_group_id = var.environment_security_group_id
       }
     }
   }
+
+  # Explicitly disable pipeline sharing for integration teardown reliability.
+  # Sharing is covered by unit tests in the child deployment pipeline module.
+  security_group_id = null
 
   dlp_policy = {
     display_name            = format("tftest-ptn-envgroup-dlp-%s", formatdate("YYYYMMDDhhmmss", timestamp()))

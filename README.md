@@ -287,24 +287,19 @@ Source: rpothin/res-deploymentpipeline/powerplatform
 
 Version: = 0.1.2
 
-<!-- TODO (before publishing to Terraform Registry): Replace the relative links below
-     with absolute GitHub URLs, e.g.:
-       See [CONTRIBUTING.md](https://github.com/<OWNER>/<REPO>/blob/main/CONTRIBUTING.md)
-     Relative paths work on GitHub but 404 on the Terraform Registry. -->
-
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
+See [CONTRIBUTING.md](https://github.com/rpothin/terraform-powerplatform-ptn-environmentgroup/blob/main/CONTRIBUTING.md) for contribution guidelines.
 
 ## Code of Conduct
 
-See [CODE\_OF\_CONDUCT.md](CODE\_OF\_CONDUCT.md).
+See [CODE\_OF\_CONDUCT.md](https://github.com/rpothin/terraform-powerplatform-ptn-environmentgroup/blob/main/CODE_OF_CONDUCT.md).
 
 ## Support
 
-See [SUPPORT.md](SUPPORT.md) for support information.
+See [SUPPORT.md](https://github.com/rpothin/terraform-powerplatform-ptn-environmentgroup/blob/main/SUPPORT.md) for support information.
 
 ## License
 
-This project is licensed under the MIT License — see [LICENSE](LICENSE) for details.
+This project is licensed under the MIT License — see [LICENSE](https://github.com/rpothin/terraform-powerplatform-ptn-environmentgroup/blob/main/LICENSE) for details.
 <!-- END_TF_DOCS -->

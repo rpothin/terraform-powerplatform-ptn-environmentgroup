@@ -34,6 +34,12 @@ Description: Dataverse API URL of the Pipelines Host environment.
 
 Type: `string`
 
+### <a name="input_prod_security_group_id"></a> [prod\_security\_group\_id](#input\_prod\_security\_group\_id)
+
+Description: Entra ID security group UUID to restrict access to the production environment. Required because Production Dataverse environments must have an explicit security group.
+
+Type: `string`
+
 ## Optional Inputs
 
 The following input variables are optional (have default values):

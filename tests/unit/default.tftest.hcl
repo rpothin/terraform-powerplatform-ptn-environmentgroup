@@ -240,6 +240,23 @@ run "rejects_malformed_dataverse_security_group_id" {
   expect_failures = [var.environments]
 }
 
+run "rejects_production_environment_without_security_group" {
+  command = plan
+
+  variables {
+    environments = {
+      "dev" = { display_name = "Dev", environment_type = "Sandbox", dataverse = {} }
+      "prod" = {
+        display_name     = "Prod"
+        environment_type = "Production"
+        dataverse        = {}
+      }
+    }
+  }
+
+  expect_failures = [var.environments]
+}
+
 # ---------------------------------------------------------------------------
 # var.dlp_policy validations
 # ---------------------------------------------------------------------------
@@ -354,6 +371,50 @@ run "rejects_pipeline_with_duplicate_stage_env_keys" {
           { environment_key = "uat" },
           { environment_key = "uat" }
         ]
+      }
+    }
+  }
+
+  expect_failures = [var.pipelines]
+}
+
+run "rejects_pipeline_with_dev_env_as_stage" {
+  command = plan
+
+  override_module {
+    target  = module.dlp_policy
+    outputs = { resource_id = "00000000-0000-0000-0000-000000000000" }
+  }
+
+  variables {
+    pipelines = {
+      "main" = {
+        dev_environment_key = "dev"
+        stages              = [{ environment_key = "dev" }]
+      }
+    }
+  }
+
+  expect_failures = [var.pipelines]
+}
+
+run "rejects_delegated_deployment_without_spn" {
+  command = plan
+
+  override_module {
+    target  = module.dlp_policy
+    outputs = { resource_id = "00000000-0000-0000-0000-000000000000" }
+  }
+
+  variables {
+    pipelines = {
+      "main" = {
+        dev_environment_key = "dev"
+        stages = [{
+          environment_key          = "uat"
+          use_delegated_deployment = true
+          # deployment_spn_client_id intentionally omitted
+        }]
       }
     }
   }

@@ -91,6 +91,14 @@ DESCRIPTION
     error_message = "Each environments[*].dataverse.security_group_id must be a valid UUID when provided."
   }
 
+  validation {
+    condition = alltrue([
+      for k, v in var.environments :
+      v.environment_type != "Production" || (v.dataverse != null && v.dataverse.security_group_id != null)
+    ])
+    error_message = "Production environments require an explicit dataverse.security_group_id. The all-zeros UUID is used when security_group_id is null, which is not appropriate for production workloads. Set a valid Entra ID security group UUID."
+  }
+
 }
 
 variable "dlp_policy" {
@@ -196,6 +204,23 @@ DESCRIPTION
       length(p.stages) == length(toset([for s in p.stages : s.environment_key]))
     ])
     error_message = "Pipeline stages must reference unique environment keys within each pipeline."
+  }
+
+  validation {
+    condition = alltrue([
+      for pk, p in var.pipelines :
+      !contains([for s in p.stages : s.environment_key], p.dev_environment_key)
+    ])
+    error_message = "A pipeline's dev_environment_key must not appear in its stages[*].environment_key. The dev environment is the source; it cannot also be a deployment target."
+  }
+
+  validation {
+    condition = alltrue([
+      for pk, p in var.pipelines : alltrue([
+        for s in p.stages : !s.use_delegated_deployment || s.deployment_spn_client_id != null
+      ])
+    ])
+    error_message = "deployment_spn_client_id is required when use_delegated_deployment = true."
   }
 }
 

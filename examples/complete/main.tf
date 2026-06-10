@@ -29,7 +29,9 @@ module "this" {
     "prod" = {
       display_name     = "${var.name} - Prod"
       environment_type = "Production"
-      dataverse        = {}
+      dataverse = {
+        security_group_id = var.prod_security_group_id
+      }
     }
   }
 

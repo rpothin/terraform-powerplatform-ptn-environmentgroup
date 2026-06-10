@@ -38,6 +38,11 @@ variable "dev_security_group_id" {
   default     = null
 }
 
+variable "prod_security_group_id" {
+  description = "Entra ID security group UUID to restrict access to the production environment. Required because Production Dataverse environments must have an explicit security group."
+  type        = string
+}
+
 variable "application_admin_id" {
   description = "Optional Azure AD service principal UUID for environment admin role."
   type        = string

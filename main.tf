@@ -67,7 +67,7 @@ resource "time_sleep" "provisioning_buffer" {
 
 module "dlp_policy" {
   source  = "rpothin/res-dlppolicy/powerplatform"
-  version = "0.1.4"
+  version = "0.2.0"
 
   display_name                      = var.dlp_policy.display_name
   default_connectors_classification = local.dlp_default_classification

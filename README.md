@@ -276,7 +276,7 @@ The following Modules are called:
 
 Source: rpothin/res-dlppolicy/powerplatform
 
-Version: 0.1.4
+Version: 0.2.0
 
 ### <a name="module_environments"></a> [environments](#module\_environments)
 
